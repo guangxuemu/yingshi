@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>在线视频播放</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        .container { max-width: 1200px; margin: 20px auto; }
+        .player-box { background: #000; border-radius: 8px; overflow: hidden; }
+        #player { width: 100%; height: 600px; }
+        .episode-list { margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+        .source-btn {
+            padding: 10px 15px;
+            background: #4a5568;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            margin: 0 10px 10px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .source-btn:hover {
+            background: #2d3748;
+        }
+        .source-btn.active {
+            background: #007bff;
+        }
+        #movieTitle {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #2d2d2d;
+            border-radius: 4px;
+        }
+        .episode-btn {
+            padding: 8px 12px; background: #2d2d2d; color: #fff; border: none;
+            border-radius: 4px; cursor: pointer; transition: all 0.3s;
+        }
+        .episode-btn:hover { background: #3d3d3d; }
+        .episode-btn.active { background: #007bff; }
+        
+        @media (max-width: 768px) {
+        .container { margin: 10px; }
+        #player { height: calc(56.25vw - 20px); }
+        .source-btn { padding: 8px 12px; margin: 0 5px 5px 0; }
+        .episode-btn { padding: 6px 10px; font-size: 0.9rem; }
+    }
+    .source-btn { font-size: 1rem; }
+    .episode-btn { font-size: 0.95rem; }
+    .episode-list { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="player-box">
+            <iframe id="player" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <div class="source-list" id="sourceList" style="margin: 20px 0 20px 0;"></div>
+        <div class="episode-list" id="episodeList"></div>
+    </div>
+
+    <script>
+        // 视频数据API地址https://jszyapi.com/api.php/provide/vod?type=json&ac=detail&wd=%E4%BC%BC%E9%94%A6
+        const API_SOURCES = [
+  { name: '源1', url: `https://seep.eu.org/cjhwba.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源2', url: `https://seep.eu.org/caiji.dbzy.tv%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源3', url: `https://seep.eu.org/cj.lziapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  //{ name: '源4', url: `https://seep.eu.org/bfzyapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源4', url: `https://seep.eu.org/mozhuazy.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源5', url: `https://seep.eu.org/cj.rycjapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源6', url: `https://seep.eu.org/360zy.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源7', url: `https://seep.eu.org/collect.wolongzy.cc%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源8', url: `https://seep.eu.org/caiji.moduapi.cc%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源9', url: `https://seep.eu.org/ikunzyapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源10', url: `https://seep.eu.org/jszyapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` }
+];
+
+let currentApiSource = API_SOURCES[0];
+
+        // 初始化播放器
+        function initPlayer(m3u8Url) {
+            const encodedUrl = encodeURIComponent(m3u8Url);
+            document.getElementById('player').src = 
+                `https://www.360jiexi.com/player/?url=${encodedUrl}`;
+        }
+
+        // 创建剧集按钮
+        function createEpisodeButtons(episodes) {
+            const container = document.getElementById('episodeList');
+            episodes.forEach((ep, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'episode-btn' + (index === 0 ? ' active' : '');
+                btn.textContent = ep.title;
+                btn.onclick = () => {
+                    document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    initPlayer(ep.url);
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        // 加载数据
+        // 创建源切换按钮
+async function createSourceButtons() {
+  const container = document.getElementById('sourceList');
+  for (const source of API_SOURCES) {
+    const btn = document.createElement('button');
+    btn.className = source === currentApiSource ? 'source-btn active' : 'source-btn';
+    btn.textContent = '加载中...';
+    
+    try {
+      const response = await fetch(source.url);
+      const data = await response.json();
+      const vodName = data.list?.[0]?.vod_name || source.name;
+      btn.textContent = vodName;
+    } catch (error) {
+      console.error('接口请求失败:', error);
+      btn.textContent = source.name;
+    }
+    
+    btn.onclick = () => {
+      document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentApiSource = source;
+      document.getElementById('episodeList').innerHTML = '';
+      loadData();
+    };
+    container.appendChild(btn);
+  }
+}
+
+async function loadData() {
+            try {
+                const response = await fetch(currentApiSource.url);
+                const data = await response.json();
+                console.log('API响应数据:', JSON.stringify(data));
+                if (!data.list || !data.list[0].vod_play_url) {
+                    throw new Error('接口数据结构异常');
+                }
+                
+                // 解析剧集数据（假设数据结构中存在vod_play_url字段）
+                const episodes = data.list[0].vod_play_url.split('#').map(item => {
+                    const [title, url] = item.split('$');
+                    return { title: title.trim(), url: url.trim() };
+                }).filter(ep => ep.url.toLowerCase().endsWith('.m3u8'));
+                
+                if(episodes.length === 0) {
+                    throw new Error('未找到有效的m3u8格式视频源');
+                }
+                // 默认加载第一个剧集
+                if(episodes.length > 0) {
+                    initPlayer(episodes[0].url);
+                    createEpisodeButtons(episodes);
+                }
+            } catch (error) {
+                console.error('数据加载失败:', error);
+                const container = document.getElementById('episodeList');
+                container.innerHTML = `<div style="color: red; padding: 10px; background: #ffecec;">数据加载失败: ${error.message}</div>`;
+            }
+        }
+
+        // 页面加载完成后执行
+        window.onload = async () => {
+  await createSourceButtons();
+  loadData();
+};
+    </script>
+</body>
+</html>
+
+
