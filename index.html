@@ -372,10 +372,13 @@ async function preloadAPIData() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const wdParam = new URLSearchParams(window.location.search).get('wd');
+    if (!wdParam) return;
+    
     await preloadAPIData();
     createSourceButtons();
     loadData();
-    document.getElementById('searchInput').value = new URLSearchParams(window.location.search).get('wd') || '';
+    document.getElementById('searchInput').value = wdParam;
 });
     </script>
 </body>
