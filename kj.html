@@ -1,15 +1,27 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <link rel="manifest" href="/manifest.json">
     <meta charset="UTF-8">
-    <meta name="theme-color" content="#007bff">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>在线视频播放</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         .container { max-width: 1200px; margin: 20px auto; }
+.loading {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 1.2rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+.error-message {
+    color: #dc3545;
+    padding: 20px;
+    background: #ffecec;
+    border-radius: 8px;
+    margin: 20px 0;
+}
         .player-box { background: #000; border-radius: 8px; overflow: hidden; }
         #player { width: 100%; height: 600px; }
         .episode-list { margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
@@ -104,7 +116,83 @@
 let currentApiSource = API_SOURCES[0];
 
         // 初始化播放器
-        function initPlayer(m3u8Url) {
+        // IndexedDB缓存相关函数
+const openDB = () => {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('VideoCacheDB', 1);
+        
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('apiCache')) {
+                db.createObjectStore('apiCache', { keyPath: 'url' });
+            }
+        };
+        
+        request.onsuccess = (event) => resolve(event.target.result);
+        request.onerror = (event) => reject(event.target.error);
+    });
+};
+
+const getCachedData = async (url) => {
+    try {
+        const db = await openDB();
+        const tx = db.transaction('apiCache', 'readonly');
+        const store = tx.objectStore('apiCache');
+        const request = store.get(url);
+        
+        return new Promise((resolve) => {
+            request.onsuccess = (e) => {
+                const result = e.target.result;
+                // 检查缓存有效期（1小时）
+                if (result && Date.now() - result.timestamp < 3600000) {
+                    resolve(result.data);
+                } else {
+                    resolve(null);
+                }
+            };
+            request.onerror = () => resolve(null);
+        });
+    } catch {
+        return null;
+    }
+};
+
+const cacheData = async (url, data) => {
+    try {
+        const db = await openDB();
+        const tx = db.transaction('apiCache', 'readwrite');
+        const store = tx.objectStore('apiCache');
+        store.put({ url, data, timestamp: Date.now() });
+    } catch (error) {
+        console.error('缓存失败:', error);
+    }
+};
+
+// 带重试的fetch
+const fetchWithRetry = async (url, retries = 3, timeout = 5000) => {
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        
+        const response = await fetch(url, {
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response;
+    } catch (error) {
+        if (retries > 0) {
+            console.log(`请求失败，剩余重试次数：${retries}`);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            return fetchWithRetry(url, retries - 1, timeout);
+        }
+        throw error;
+    }
+};
+
+function initPlayer(m3u8Url) {
             const encodedUrl = encodeURIComponent(m3u8Url);
             document.getElementById('player').src = 
                 `https://www.360jiexi.com/player/?url=${encodedUrl}`;
@@ -138,8 +226,13 @@ async function createSourceButtons() {
     try {
       const response = await fetch(source.url);
       const data = await response.json();
-      const vodName = data.list?.[0]?.vod_name || source.name;
-      btn.textContent = vodName;
+      const vodName = data.list[0]?.vod_name?.trim() ?? '未知影片';
+      btn.textContent = data.list?.[0]?.vod_name ? vodName : '源不可用';
+                    btn.disabled = !data.list?.[0]?.vod_name;
+                    if (!data.list?.[0]?.vod_name) {
+                        btn.style.opacity = '0.6';
+                        btn.style.cursor = 'not-allowed';
+                    }
     } catch (error) {
       console.error('接口请求失败:', error);
       btn.textContent = source.name;
@@ -158,8 +251,59 @@ async function createSourceButtons() {
 
 async function loadData() {
             try {
-                const response = await fetch(currentApiSource.url);
-                const data = await response.json();
+                // 显示加载状态
+                const container = document.getElementById('episodeList');
+                container.innerHTML = '<div class="loading">加载中...</div>';
+                
+                // 尝试从缓存读取
+                const cachedData = await getCachedData(currentApiSource.url);
+                if (cachedData) {
+                    console.log('使用缓存数据');
+                    const data = cachedData;
+                    console.log('使用缓存数据:', JSON.stringify(data));
+                    if (!data.list?.[0]?.vod_play_url) {
+                        throw new Error('无效的剧集数据格式');
+                    }
+                    
+                    const episodes = data.list[0].vod_play_url.split('#')
+                        .filter(item => item.includes('$'))
+                        .map(item => {
+                            const parts = item.split('$');
+                            if (parts.length < 2 || !parts[0].trim() || !parts[1]?.trim()) {
+                                console.warn('无效剧集条目:', item);
+                                return null;
+                            }
+                            return { 
+                                title: parts[0].trim(), 
+                                url: parts[1].trim().replace(/^(http:|https:)?\/\//, 'https://') 
+                            };
+                        })
+                        .filter(Boolean)
+                        .filter(ep => {
+                            const isValid = ep.url.toLowerCase().endsWith('.m3u8');
+                            if (!isValid) console.warn('非m3u8格式:', ep.url);
+                            return isValid;
+                        });
+                    
+                    if(episodes.length === 0) {
+                        throw new Error('未找到有效的m3u8格式视频源');
+                    }
+                    
+                    document.getElementById('episodeList').innerHTML = '';
+                    if(episodes.length > 0) {
+                        initPlayer(episodes[0].url);
+                        createEpisodeButtons(episodes);
+                    }
+                    return;
+                }
+                
+                // 发起网络请求
+                                // 智能选择数据源
+                const { source, data } = await selectBestSource();
+                currentApiSource = source;
+                
+                // 缓存有效数据
+                await cacheData(currentApiSource.url, data);
                 console.log('API响应数据:', JSON.stringify(data));
                 if (!data.list || !data.list[0].vod_play_url) {
                     throw new Error('接口数据结构异常');
@@ -180,9 +324,10 @@ async function loadData() {
                     createEpisodeButtons(episodes);
                 }
             } catch (error) {
-                console.error('数据加载失败:', error);
-                const container = document.getElementById('episodeList');
-                container.innerHTML = `<div style="color: red; padding: 10px; background: #ffecec;">数据加载失败: ${error.message}</div>`;
+                console.error(error);
+                document.getElementById('episodeList').innerHTML = '';
+                document.getElementById('sourceList').innerHTML = 
+                    `<div class="error-message">数据加载失败: ${error.message}</div>`;
             }
         }
 
@@ -202,47 +347,39 @@ async function loadData() {
             if (e.key === 'Enter') handleSearch();
         });
 
-        // 安装提示处理
-        let deferredPrompt;
-        const installButton = document.createElement('button');
-        installButton.style = 'position: fixed; bottom: 20px; right: 20px; padding: 12px 24px; background: #007bff; color: white; border: none; border-radius: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); z-index: 9999; display: none;';
-        installButton.textContent = '★ 添加快捷方式';
-        document.body.appendChild(installButton);
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // 放宽移动端检测条件并添加调试日志
-console.log('检测到PWA安装提示事件:', e);
-if(!/^(?=.*Mobile)(?!.*(iPad|Tablet|Silk)).*$/i.test(navigator.userAgent)) {
-  console.log('非移动端设备，跳过安装提示');
-  return;
-} {
-                e.preventDefault();
-                deferredPrompt = e;
-                // 添加iOS兼容性检测
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-if (!isIOS && !localStorage.getItem('installPromptShown')) {
-                    installButton.style.display = 'block';
-                }
-            }
-        });
-
-        installButton.addEventListener('click', async () => {
-            installButton.style.display = 'none';
-            localStorage.setItem('installPromptShown', 'true');
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            console.log('用户选择:', outcome);
-        });
-
         // 页面加载完成后执行
-        window.onload = async () => {
-  await createSourceButtons();
-  loadData();
-  // 初始化搜索框内容
-  document.getElementById('searchInput').value = new URLSearchParams(window.location.search).get('wd') || '';
-};
+        // 初始化预加载
+async function preloadAPIData() {
+    try {
+        const requests = API_SOURCES.map(async (source) => {
+            try {
+                const response = await fetchWithRetry(source.url);
+                const data = await response.json();
+                if (data.list && data.list[0].vod_name) {
+                    await cacheData(source.url, data);
+                    return { source, data };
+                }
+            } catch (error) {
+                console.error(`预加载源${source.name}失败:`, error);
+            }
+            return null;
+        });
+        return (await Promise.all(requests)).filter(Boolean);
+    } catch (error) {
+        console.error('预加载失败:', error);
+        return [];
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const wdParam = new URLSearchParams(window.location.search).get('wd');
+    if (!wdParam) return;
+    
+    await preloadAPIData();
+    createSourceButtons();
+    loadData();
+    document.getElementById('searchInput').value = wdParam;
+});
     </script>
 </body>
 </html>
-
-
