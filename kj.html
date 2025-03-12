@@ -210,10 +210,17 @@ async function loadData() {
         document.body.appendChild(installButton);
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+            // 放宽移动端检测条件并添加调试日志
+console.log('检测到PWA安装提示事件:', e);
+if(!/^(?=.*Mobile)(?!.*(iPad|Tablet|Silk)).*$/i.test(navigator.userAgent)) {
+  console.log('非移动端设备，跳过安装提示');
+  return;
+} {
                 e.preventDefault();
                 deferredPrompt = e;
-                if(!localStorage.getItem('installPromptShown')) {
+                // 添加iOS兼容性检测
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+if (!isIOS && !localStorage.getItem('installPromptShown')) {
                     installButton.style.display = 'block';
                 }
             }
