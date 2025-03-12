@@ -53,6 +53,10 @@
 </head>
 <body>
     <div class="container">
+        <div class="search-container" style="margin: 20px auto; text-align: center;">
+            <input type="text" id="searchInput" placeholder="输入影片名称" style="padding: 10px; width: 300px; border-radius: 4px; border: 1px solid #ccc;">
+            <button onclick="handleSearch()" style="padding: 10px 20px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">搜索</button>
+        </div>
         <div class="player-box">
             <iframe id="player" frameborder="0" allowfullscreen></iframe>
         </div>
@@ -63,15 +67,15 @@
     <script>
         // 视频数据API地址https://jszyapi.com/api.php/provide/vod?type=json&ac=detail&wd=%E4%BC%BC%E9%94%A6
         const API_SOURCES = [
-  { name: '源1', url: `https://seep.eu.org/cjhwba.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源2', url: `https://seep.eu.org/caiji.dbzy.tv%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源3', url: `https://seep.eu.org/cj.lziapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  //{ name: '源4', url: `https://seep.eu.org/bfzyapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源1', url: `https://seep.eu.org/cj.rycjapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源2', url: `https://seep.eu.org/caiji.moduapi.cc%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源3', url: `https://seep.eu.org/collect.wolongzy.cc%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
   { name: '源4', url: `https://seep.eu.org/mozhuazy.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源5', url: `https://seep.eu.org/cj.rycjapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源5', url: `https://seep.eu.org/cjhwba.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
   { name: '源6', url: `https://seep.eu.org/360zy.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源7', url: `https://seep.eu.org/collect.wolongzy.cc%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源8', url: `https://seep.eu.org/caiji.moduapi.cc%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源7', url: `https://seep.eu.org/caiji.dbzy.tv%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源8', url: `https://seep.eu.org/cj.lziapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  //{ name: '源4', url: `https://seep.eu.org/bfzyapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
   { name: '源9', url: `https://seep.eu.org/ikunzyapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
   { name: '源10', url: `https://seep.eu.org/jszyapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` }
 ];
@@ -161,10 +165,28 @@ async function loadData() {
             }
         }
 
+        // 处理搜索功能
+        function handleSearch() {
+            const searchValue = document.getElementById('searchInput').value.trim();
+            if (searchValue) {
+                const newUrl = new URL(window.location.href);
+                newUrl.searchParams.set('wd', searchValue);
+                history.replaceState({}, '', newUrl);
+                location.reload();
+            }
+        }
+
+        // 绑定回车事件
+        document.getElementById('searchInput').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') handleSearch();
+        });
+
         // 页面加载完成后执行
         window.onload = async () => {
   await createSourceButtons();
   loadData();
+  // 初始化搜索框内容
+  document.getElementById('searchInput').value = new URLSearchParams(window.location.search).get('wd') || '';
 };
     </script>
 </body>
