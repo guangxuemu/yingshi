@@ -298,7 +298,6 @@ async function loadData() {
                 }
                 
                 // 发起网络请求
-                                // 智能选择数据源
                 const { source, data } = await selectBestSource();
                 currentApiSource = source;
                 
@@ -347,6 +346,31 @@ async function loadData() {
             if (e.key === 'Enter') handleSearch();
         });
 
+        async function selectBestSource() {
+  const sources = await Promise.all(API_SOURCES.map(async (source) => {
+    try {
+      const start = Date.now();
+      const response = await fetchWithRetry(source.url);
+      const data = await response.json();
+      return {
+        source,
+        data,
+        responseTime: Date.now() - start,
+        isValid: data.list?.[0]?.vod_play_url?.includes('m3u8')
+      };
+    } catch (error) {
+      return { source, error: true };
+    }
+  }));
+
+  const validSources = sources
+    .filter(s => !s.error && s.isValid)
+    .sort((a, b) => a.responseTime - b.responseTime);
+
+  return validSources.length > 0 
+    ? validSources[0] 
+    : { source: API_SOURCES[0], data: null };
+}
         // 页面加载完成后执行
         // 初始化预加载
 async function preloadAPIData() {
@@ -383,3 +407,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     </script>
 </body>
 </html>
+
+
+
+
+
