@@ -218,25 +218,34 @@ function initPlayer(m3u8Url) {
         // 创建源切换按钮
 async function createSourceButtons() {
   const container = document.getElementById('sourceList');
+  container.innerHTML = '';
+  
   for (const source of API_SOURCES) {
-    const btn = document.createElement('button');
-    btn.className = source === currentApiSource ? 'source-btn active' : 'source-btn';
-    btn.textContent = '加载中...';
-    
     try {
       const response = await fetch(source.url);
       const data = await response.json();
-      const vodName = data.list[0]?.vod_name?.trim() ?? '未知影片';
-      btn.textContent = data.list?.[0]?.vod_name ? vodName : '源不可用';
-                    btn.disabled = !data.list?.[0]?.vod_name;
-                    if (!data.list?.[0]?.vod_name) {
-                        btn.style.opacity = '0.6';
-                        btn.style.cursor = 'not-allowed';
-                    }
+      
+      if (!data.list?.[0]?.vod_name) {
+        console.warn(`源${source.name}数据无效`);
+        continue;
+      }
+      
+      const btn = document.createElement('button');
+      btn.className = source === currentApiSource ? 'source-btn active' : 'source-btn';
+      btn.textContent = data.list[0].vod_name.trim();
+      
+      btn.onclick = () => {
+        document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentApiSource = source;
+        document.getElementById('episodeList').innerHTML = '';
+        loadData();
+      };
+      container.appendChild(btn);
     } catch (error) {
-      console.error('接口请求失败:', error);
-      btn.textContent = source.name;
+      console.error(`[${source.name}]接口请求失败:`, error);
     }
+  }
     
     btn.onclick = () => {
       document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
@@ -247,7 +256,7 @@ async function createSourceButtons() {
     };
     container.appendChild(btn);
   }
-}
+
 
 async function loadData() {
             try {
@@ -326,8 +335,8 @@ async function loadData() {
             } catch (error) {
                 console.error(error);
                 document.getElementById('episodeList').innerHTML = '';
-                document.getElementById('sourceList').innerHTML = 
-                    `<div class="error-message">数据加载失败: ${error.message}</div>`;
+                document.getElementById('sourceList').innerHTML = '';
+                    //`<div class="error-message">数据加载失败: ${error.message}</div>`;
             }
         }
 
