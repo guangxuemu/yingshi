@@ -304,8 +304,8 @@
             
             if (cachedData) {
                 const { data, timestamp } = JSON.parse(cachedData);
-                // 缓存有效期为2小时
-                if (now - timestamp < 7200000) {
+                // 缓存有效期为24小时
+                if (now - timestamp < 86400000) {
                     renderMovies(categoryId, data);
                     return;
                 }
