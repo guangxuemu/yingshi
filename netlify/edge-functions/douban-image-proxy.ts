@@ -29,14 +29,17 @@ export default async (request: Request) => {
   const serverNum = Math.floor(Math.random() * 9) + 1;
   const imageUrl = `https://img${serverNum}.doubanio.com${imagePath}`;
 
-  // 最多重试3次
-  let retries = 3;
+  // 最多重试5次
+  let retries = 5;
   while (retries > 0) {
     try {
       const response = await fetch(imageUrl, {
         headers: {
           'Referer': 'https://movie.douban.com/',
-          'User-Agent': 'Mozilla/5.0'
+          'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1',
+          'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+          'Accept-Language': 'zh-CN,zh;q=0.9',
+          'X-Requested-With': 'XMLHttpRequest'
         }
       });
       
