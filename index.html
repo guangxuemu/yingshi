@@ -324,9 +324,16 @@
                     episodesInfo = `<div class="movie-episodes">${movie.episodes_info}</div>`;
                 }
                 
+                // 修改renderMovies函数中的movieCard.innerHTML部分
                 movieCard.innerHTML = `
                     <a href="play.html?wd=${encodeURIComponent(movie.title)}">
-                        <img class="movie-cover" src="/image-proxy?path=${encodeURIComponent(new URL(movie.cover).pathname)}" alt="${movie.title}" loading="lazy">
+                        <div class="movie-cover">
+                            <img src="/image-proxy?path=${encodeURIComponent(new URL(movie.cover).pathname)}" 
+                                 alt="${movie.title}"
+                                 loading="lazy"
+                                 onload="this.classList.add('loaded')"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNmMGYwZjAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjE2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiBmaWxsPSIjY2NjIj7lm77niYc8L3RleHQ+PC9zdmc+'">
+                        </div>
                         <div class="movie-info">
                             <div class="movie-title">${movie.title}</div>
                             <div class="movie-rate">${movie.rate || ''}</div>
@@ -385,5 +392,31 @@
     </script>
 </body>
 </html>
+<style>
+    /* 在原有style标签中添加 */
+    .movie-cover {
+        position: relative;
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+    }
+    
+    .movie-cover img {
+        position: relative;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .movie-cover img.loaded {
+        opacity: 1;
+        background: none;
+        animation: none;
+    }
+    
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+</style>
 
 
