@@ -7,8 +7,9 @@ export default async (request: Request) => {
   }
 
   try {
-    // 拼接完整的豆瓣图片URL
-    const imageUrl = `https://img1.doubanio.com${imagePath}`;
+    // 随机选择1-9的图片服务器
+    const serverNum = Math.floor(Math.random() * 9) + 1;
+    const imageUrl = `https://img${serverNum}.doubanio.com${imagePath}`;
     
     // 转发请求到豆瓣图片服务器
     const response = await fetch(imageUrl, {
