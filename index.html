@@ -324,9 +324,10 @@
                     episodesInfo = `<div class="movie-episodes">${movie.episodes_info}</div>`;
                 }
                 
+                const proxyCoverUrl = `https://seep.eu.org/${encodeURIComponent(movie.cover)}`;
                 movieCard.innerHTML = `
                     <a href="play.html?wd=${encodeURIComponent(movie.title)}">
-                        <img class="movie-cover" src="${movie.cover}" alt="${movie.title}">
+                        <img class="movie-cover" src="${proxyCoverUrl}" alt="${movie.title}">
                         <div class="movie-info">
                             <div class="movie-title">${movie.title}</div>
                             <div class="movie-rate">${movie.rate || ''}</div>
