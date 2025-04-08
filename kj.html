@@ -66,12 +66,12 @@
             padding: 0 10px;
         }
         #searchInput {
-            width: 70%;
+            width: 50%;
             margin: 0;
             flex-shrink: 1;
         }
         .search-container button {
-            width: 25%;
+            width: 20%;
             margin: 0;
             flex-shrink: 0;
             white-space: nowrap;
@@ -87,7 +87,8 @@
 <body>
     <div class="container">
         <div class="search-container" style="margin: 20px auto; text-align: center;">
-            <input type="text" id="searchInput" placeholder="输入影片名称" style="padding: 10px; width: 300px; border-radius: 4px; border: 1px solid #ccc;">
+            <button onclick="window.location.href='index.html'" style="padding: 10px 20px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-right: 10px;">首页</button>
+            <input type="text" id="searchInput" placeholder="输入影片名称" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc;">
             <button onclick="handleSearch()" style="padding: 10px 20px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">搜索</button>
         </div>
         <div class="player-box">
@@ -98,13 +99,13 @@
     </div>
 
     <script>
-        // 视频数据API地址https://jszyapi.com/api.php/provide/vod?type=json&ac=detail&wd=%E4%BC%BC%E9%94%A6
+        // 视频数据API地址cjhwba.com api.ukuapi.com  api.wujinapi.me
         const API_SOURCES = [
   { name: '源1', url: `https://seep.eu.org/cj.rycjapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
   { name: '源2', url: `https://seep.eu.org/caiji.moduapi.cc%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源3', url: `https://seep.eu.org/collect.wolongzy.cc%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源4', url: `https://seep.eu.org/mozhuazy.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源5', url: `https://seep.eu.org/cjhwba.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源3', url: `https://seep.eu.org/mozhuazy.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源4', url: `https://seep.eu.org/collect.wolongzy.cc%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
+  { name: '源5', url: `https://seep.eu.org/api.wujinapi.me%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
   { name: '源6', url: `https://seep.eu.org/360zy.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
   { name: '源7', url: `https://seep.eu.org/caiji.dbzy.tv%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
   { name: '源8', url: `https://seep.eu.org/cj.lziapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
@@ -218,36 +219,44 @@ function initPlayer(m3u8Url) {
         // 创建源切换按钮
 async function createSourceButtons() {
   const container = document.getElementById('sourceList');
+  container.innerHTML = '';
+  
   for (const source of API_SOURCES) {
-    const btn = document.createElement('button');
-    btn.className = source === currentApiSource ? 'source-btn active' : 'source-btn';
-    btn.textContent = '加载中...';
-    
     try {
       const response = await fetch(source.url);
+      if (!response.ok) {
+        console.warn(`[${source.name}]接口不可用`);
+        continue;
+      }
+      
       const data = await response.json();
-      const vodName = data.list[0]?.vod_name?.trim() ?? '未知影片';
-      btn.textContent = data.list?.[0]?.vod_name ? vodName : '源不可用';
-                    btn.disabled = !data.list?.[0]?.vod_name;
-                    if (!data.list?.[0]?.vod_name) {
-                        btn.style.opacity = '0.6';
-                        btn.style.cursor = 'not-allowed';
-                    }
+      if (!data.list?.[0]?.vod_name) {
+        console.warn(`源${source.name}数据无效`);
+        continue;
+      }
+      
+      const btn = document.createElement('button');
+      btn.className = source === currentApiSource ? 'source-btn active' : 'source-btn';
+      btn.textContent = `${data.list[0].vod_name.trim()}`;
+      btn.dataset.sourceUrl = source.url;
+      btn.dataset.sourceName = source.name;
+      btn.dataset.sourceStatus = 'valid';
+      
+      btn.onclick = () => {
+        document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentApiSource = source;
+        document.getElementById('episodeList').innerHTML = '';
+        loadData();
+      };
+      container.appendChild(btn);
     } catch (error) {
-      console.error('接口请求失败:', error);
-      btn.textContent = source.name;
+      console.error(`[${source.name}]接口请求失败:`, error);
+      // 自动跳过无效源，不创建对应按钮
     }
-    
-    btn.onclick = () => {
-      document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      currentApiSource = source;
-      document.getElementById('episodeList').innerHTML = '';
-      loadData();
-    };
-    container.appendChild(btn);
   }
 }
+
 
 async function loadData() {
             try {
@@ -310,10 +319,18 @@ async function loadData() {
                 }
                 
                 // 解析剧集数据（假设数据结构中存在vod_play_url字段）
-                const episodes = data.list[0].vod_play_url.split('#').map(item => {
-                    const [title, url] = item.split('$');
-                    return { title: title.trim(), url: url.trim() };
-                }).filter(ep => ep.url.toLowerCase().endsWith('.m3u8'));
+                const episodePattern = /([^#]+)\$([^#]+)/g;
+                const episodes = Array.from(data.list[0].vod_play_url.matchAll(episodePattern))
+                    .map(match => ({
+                        title: match[1].trim(),
+                        url: match[2].trim().replace(/^(http:|https:)?\/\//, 'https://')
+                    }))
+                    .filter(ep => 
+                        ep.url && 
+                        ep.url.match(/^https?:\/\/[^\s]+.m3u8($|\?)/i) &&
+                        ep.title &&
+                        ep.title.length > 0
+                    );
                 
                 if(episodes.length === 0) {
                     throw new Error('未找到有效的m3u8格式视频源');
@@ -324,10 +341,11 @@ async function loadData() {
                     createEpisodeButtons(episodes);
                 }
             } catch (error) {
-                console.error(error);
-                document.getElementById('episodeList').innerHTML = '';
-                document.getElementById('sourceList').innerHTML = 
-                    `<div class="error-message">数据加载失败: ${error.message}</div>`;
+                console.error('加载播放地址失败:', error);
+                document.getElementById('episodeList').innerHTML = '<div class="error-message"></div>';
+                document.querySelectorAll(`.source-btn[data-source-name="${currentApiSource.name}"]`).forEach(btn => {
+                    btn.style.display = 'none';
+                });
             }
         }
 
@@ -383,3 +401,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     </script>
 </body>
 </html>
+
+
