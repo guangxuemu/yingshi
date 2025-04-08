@@ -1,13 +1,1 @@
-[[headers]]
-  for = "/*"
-  [headers.values]
-    Access-Control-Allow-Origin = "*"
-    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
-    Access-Control-Allow-Headers = "Content-Type, Authorization"
 
-[[edge_functions]]
-  path = "/proxy"
-  function = "proxy"
-  # 可以添加更多路由规则
-  [edge_functions.config]
-    cache_ttl = 36000  # 缓存1小时
