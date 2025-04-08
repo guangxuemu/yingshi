@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>豆瓣热门影视推荐</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 添加以下meta标签解决图片加载问题 -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://*.douban.com https://img*.doubanio.com; connect-src 'self' https://*.douban.com https://seep.eu.org;">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -324,10 +326,9 @@
                     episodesInfo = `<div class="movie-episodes">${movie.episodes_info}</div>`;
                 }
                 
-                const proxyCoverUrl = `https://seep.eu.org/${encodeURIComponent(movie.cover)}`;
                 movieCard.innerHTML = `
                     <a href="play.html?wd=${encodeURIComponent(movie.title)}">
-                        <img class="movie-cover" src="${proxyCoverUrl}" alt="${movie.title}" onerror="this.src='${movie.cover}'">
+                        <img class="movie-cover" src="${movie.cover}" alt="${movie.title}">
                         <div class="movie-info">
                             <div class="movie-title">${movie.title}</div>
                             <div class="movie-rate">${movie.rate || ''}</div>
