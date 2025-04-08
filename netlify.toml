@@ -8,3 +8,6 @@
 [[edge_functions]]
   path = "/proxy"
   function = "proxy"
+  # 可以添加更多路由规则
+  [edge_functions.config]
+    cache_ttl = 36000  # 缓存1小时
