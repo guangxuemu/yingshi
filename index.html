@@ -334,7 +334,7 @@
                 
                 movieCard.innerHTML = `
                     <a href="play.html?wd=${encodeURIComponent(movie.title)}">
-                        <img class="movie-cover" src="/douban-image?path=${encodeURIComponent(new URL(movie.cover).pathname)}" alt="${movie.title}">
+                        <img class="movie-cover" src="//image-proxy?path=${encodeURIComponent(new URL(movie.cover).pathname)}" alt="${movie.title}">
                         <div class="movie-info">
                             <div class="movie-title">${movie.title}</div>
                             <div class="movie-rate">${movie.rate || ''}</div>
