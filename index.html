@@ -178,58 +178,35 @@
                 margin-left: 0;
             }
         }
-            .movie-cover {
-        position: relative;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: shimmer 1.5s infinite;
-    }
-    
-    .movie-cover img {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* 确保图片按比例填充容器 */
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    .movie-cover img.loaded {
-        opacity: 1;
-        background: none;
-        animation: none;
-    }
-    
-    @keyframes shimmer {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-    }
-
-    .movie-cover {
-        position: relative;
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: shimmer 1.5s infinite;
-    }
-    
-    .movie-cover img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover; /* 确保图片按比例填充容器 */
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-    
-    .movie-cover img.loaded {
-        opacity: 1;
-        background: none;
-        animation: none;
-    }
-    
-    @keyframes shimmer {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-    }
+        /* 合并重复的.movie-cover样式 */
+        .movie-cover {
+            position: relative;
+            width: 100%;
+            height: 240px;
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            overflow: hidden; /* 添加防止溢出 */
+        }
+        
+        .movie-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .movie-cover img.loaded {
+            opacity: 1;
+            background: none;
+            animation: none;
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
     </style>
 </head>
 <body>
@@ -304,8 +281,8 @@
             
             if (cachedData) {
                 const { data, timestamp } = JSON.parse(cachedData);
-                // 缓存有效期为24小时
-                if (now - timestamp < 86400000) {
+                // 缓存有效期为2小时
+                if (now - timestamp < 7200000) {
                     renderMovies(categoryId, data);
                     return;
                 }
