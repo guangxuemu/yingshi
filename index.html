@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <title>豆瓣热门影视推荐</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- 修正后的CSP策略 -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        img-src 'self' data: https://img1.doubanio.com https://img2.doubanio.com https://img3.doubanio.com https://img9.doubanio.com;
+        connect-src 'self' https://*.douban.com https://seep.eu.org;
+        style-src 'self' 'unsafe-inline';
+        script-src 'self' 'unsafe-inline';
+    ">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -326,7 +334,7 @@
                 
                 movieCard.innerHTML = `
                     <a href="play.html?wd=${encodeURIComponent(movie.title)}">
-                        <img class="movie-cover" src="${movie.cover}" alt="${movie.title}">
+                        <img class="movie-cover" src="/.netlify/functions/douban-image-proxy?path=${encodeURIComponent(new URL(movie.cover).pathname)}" alt="${movie.title}">
                         <div class="movie-info">
                             <div class="movie-title">${movie.title}</div>
                             <div class="movie-rate">${movie.rate || ''}</div>
