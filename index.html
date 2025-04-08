@@ -393,7 +393,6 @@
 </body>
 </html>
 <style>
-    /* 在原有style标签中添加 */
     .movie-cover {
         position: relative;
         background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
@@ -402,7 +401,10 @@
     }
     
     .movie-cover img {
-        position: relative;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* 确保图片按比例填充容器 */
         opacity: 0;
         transition: opacity 0.3s ease;
     }
