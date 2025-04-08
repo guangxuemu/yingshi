@@ -18,7 +18,7 @@ export default async (request: Request) => {
       return new Response(cached.body, {
         headers: {
           'Content-Type': 'image/jpeg',
-          'Cache-Control': 'public, max-age=86400',
+          'Cache-Control': 'public, max-age=864000',
           'X-Cache': 'HIT'
         }
       })
@@ -53,7 +53,7 @@ export default async (request: Request) => {
       return new Response(body, {
         headers: {
           'Content-Type': 'image/jpeg',
-          'Cache-Control': 'public, max-age=86400',
+          'Cache-Control': 'public, max-age=864000',
           'X-Cache': 'MISS'
         }
       });
