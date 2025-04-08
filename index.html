@@ -2,360 +2,378 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>在线视频播放</title>
+    <title>豆瓣热门影视推荐</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        .container { max-width: 1200px; margin: 20px auto; }
-.loading {
-    padding: 20px;
-    text-align: center;
-    color: #666;
-    font-size: 1.2rem;
-    background: #f5f5f5;
-    border-radius: 8px;
-    margin: 20px 0;
-}
-.error-message {
-    color: #dc3545;
-    padding: 20px;
-    background: #ffecec;
-    border-radius: 8px;
-    margin: 20px 0;
-}
-        .player-box { background: #000; border-radius: 8px; overflow: hidden; }
-        #player { width: 100%; height: 600px; }
-        .episode-list { margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-        .source-btn {
-            padding: 10px 15px;
-            background: #4a5568;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            margin: 0 10px 10px 0;
-            cursor: pointer;
-            transition: all 0.3s;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            padding-top: 70px;
         }
-        .source-btn:hover {
-            background: #2d3748;
-        }
-        .source-btn.active {
-            background: #007bff;
-        }
-        #movieTitle {
-            color: #fff;
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #2d2d2d;
-            border-radius: 4px;
-        }
-        .episode-btn {
-            padding: 8px 12px; background: #2d2d2d; color: #fff; border: none;
-            border-radius: 4px; cursor: pointer; transition: all 0.3s;
-        }
-        .episode-btn:hover { background: #3d3d3d; }
-        .episode-btn.active { background: #007bff; }
         
-        @media (max-width: 768px) {
-        .container { margin: 10px; }
-        #player { height: calc(56.25vw - 20px); }
-        .search-container {
-            display: flex;
-            flex-wrap: nowrap;
-            gap: 10px;
-            padding: 0 10px;
-        }
-        #searchInput {
-            width: 70%;
-            margin: 0;
-            flex-shrink: 1;
-        }
-        .search-container button {
-            width: 25%;
-            margin: 0;
-            flex-shrink: 0;
+        .category-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            z-index: 1000;
+            padding: 10px 0;
+            overflow-x: auto;
             white-space: nowrap;
         }
-        .source-btn { padding: 8px 12px; margin: 0 5px 5px 0; }
-        .episode-btn { padding: 6px 10px; font-size: 0.9rem; }
-    }
-    .source-btn { font-size: 1rem; }
-    .episode-btn { font-size: 0.95rem; }
-    .episode-list { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+        
+        .category-nav-inner {
+            display: inline-block;
+            padding: 0 15px;
+        }
+        
+        .category-link {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 0 5px;
+            background: #f0f0f0;
+            border-radius: 20px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .category-link:hover, .category-link.active {
+            background: #007bff;
+            color: #fff;
+        }
+        
+        .category-link.active {
+            font-weight: bold;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .category-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #007bff;
+        }
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+        }
+        .movie-card {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .movie-card:hover {
+            transform: translateY(-5px);
+        }
+        .movie-cover {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+        }
+        .movie-info {
+            overflow: hidden;
+            min-width: 0;
+        }
+        .movie-title {
+            font-size: 1rem;
+            margin: 0;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-decoration: none;
+            float: left;
+            max-width: calc(100% - 40px);
+        }
+        .movie-rate {
+            color: #ff9900;
+            float: right;
+        }
+        .movie-episodes {
+            color: #666;
+            font-size: 0.9rem;
+            clear: both;
+            float: left;
+            display: block;
+        }
+        .loading {
+            text-align: center;
+            color: #666;
+            font-size: 1.2rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+            margin: 20px 0;
+            position: relative;
+            min-height: 80px;
+        }
+        
+        .loading-animation {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+        }
+        
+        .loading-animation::before,
+        .loading-animation::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #007bff;
+            animation: spin 1s linear infinite;
+        }
+        
+        .loading-animation::after {
+            border-top-color: #ff9900;
+            animation-delay: 0.2s;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 768px) {
+            .movie-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            .movie-cover {
+                height: 200px;
+            }
+            .search-container {
+                display: flex;
+                flex-wrap: nowrap;
+                padding: 0 15px;
+            }
+            #searchInput {
+                width: 70%;
+                margin-right: 10px;
+                outline: none;
+                border: 1px solid #007bff;
+            }
+            #searchInput:focus {
+                border-color: #66b3ff;
+                box-shadow: 0 0 0 2px rgba(102,179,255,0.25);
+            }
+            .search-container button {
+                width: 30%;
+                margin-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="category-nav">
+        <div class="category-nav-inner">
+            <a href="#" class="category-link active" data-category="popular-tv">热门剧集</a>
+            <a href="#" class="category-link" data-category="chinese-tv">国产剧</a>
+            <a href="#" class="category-link" data-category="japanese-tv">日剧</a>
+            <a href="#" class="category-link" data-category="korean-tv">韩剧</a>
+            <a href="#" class="category-link" data-category="american-tv">美剧</a>
+            <a href="#" class="category-link" data-category="british-tv">英剧</a>
+            <a href="#" class="category-link" data-category="latest-movies">最新电影</a>
+            <a href="#" class="category-link" data-category="popular-movies">热门电影</a>
+            <a href="#" class="category-link" data-category="top-rated-movies">高分电影</a>
+            <a href="#" class="category-link" data-category="animation-movies">动画电影</a>
+            <a href="#" class="category-link" data-category="underrated-movies">冷门佳片</a>
+            <a href="#" class="category-link" data-category="anime">动漫</a>
+            <a href="#" class="category-link" data-category="variety-shows">综艺</a>
+            <a href="#" class="category-link" data-category="documentaries">纪录片</a>
+        </div>
+    </div>
+    <div class="search-container" style="margin: 0 auto; text-align: center;">
+        <input type="text" id="searchInput" placeholder="输入影片名称" style="padding: 10px; width: 300px; border-radius: 4px; border: 1px solid #ccc;">
+        <button onclick="handleSearch()" style="padding: 10px 20px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">搜索</button>
+    </div>
+    
     <div class="container">
-        <div class="search-container" style="margin: 20px auto; text-align: center;">
-            <input type="text" id="searchInput" placeholder="输入影片名称" style="padding: 10px; width: 300px; border-radius: 4px; border: 1px solid #ccc;">
-            <button onclick="handleSearch()" style="padding: 10px 20px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">搜索</button>
-        </div>
-        <div class="player-box">
-            <iframe id="player" frameborder="0" allowfullscreen></iframe>
-        </div>
-        <div class="source-list" id="sourceList" style="margin: 20px 0 20px 0;"></div>
-        <div class="episode-list" id="episodeList"></div>
+        <div id="popular-tv" class="movie-grid loading"></div>
+        <div id="chinese-tv" class="movie-grid"></div>
+        <div id="japanese-tv" class="movie-grid"></div>
+        <div id="korean-tv" class="movie-grid"></div>
+        <div id="american-tv" class="movie-grid"></div>
+        <div id="british-tv" class="movie-grid"></div>
+        <div id="latest-movies" class="movie-grid"></div>
+        <div id="popular-movies" class="movie-grid"></div>
+        <div id="top-rated-movies" class="movie-grid"></div>
+        <div id="animation-movies" class="movie-grid"></div>
+        <div id="underrated-movies" class="movie-grid"></div>
+        <div id="anime" class="movie-grid"></div>
+        <div id="variety-shows" class="movie-grid"></div>
+        <div id="documentaries" class="movie-grid"></div>
     </div>
 
     <script>
-        // 视频数据API地址cjhwba.com api.ukuapi.com  api.wujinapi.me
-        const API_SOURCES = [
-  { name: '源1', url: `https://seep.eu.org/cj.rycjapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源2', url: `https://seep.eu.org/caiji.moduapi.cc%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源3', url: `https://seep.eu.org/mozhuazy.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源4', url: `https://seep.eu.org/collect.wolongzy.cc%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源5', url: `https://seep.eu.org/api.wujinapi.me%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源6', url: `https://seep.eu.org/360zy.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源7', url: `https://seep.eu.org/caiji.dbzy.tv%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源8', url: `https://seep.eu.org/cj.lziapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  //{ name: '源4', url: `https://seep.eu.org/bfzyapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源9', url: `https://seep.eu.org/ikunzyapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` },
-  { name: '源10', url: `https://seep.eu.org/jszyapi.com%2Fapi.php%2Fprovide%2Fvod%2F%3Fac%3Ddetail%26wd=${encodeURIComponent(new URLSearchParams(window.location.search).get('wd'))}` }
-];
-
-let currentApiSource = API_SOURCES[0];
-
-        // 初始化播放器
-        // IndexedDB缓存相关函数
-const openDB = () => {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open('VideoCacheDB', 1);
-        
-        request.onupgradeneeded = (event) => {
-            const db = event.target.result;
-            if (!db.objectStoreNames.contains('apiCache')) {
-                db.createObjectStore('apiCache', { keyPath: 'url' });
-            }
+        // 豆瓣API端点配置
+        const apiEndpoints = {
+            'latest-movies': 'https://movie.douban.com/j/search_subjects?type=movie&tag=最新&sort=recommend&page_limit=72&page_start=1',
+            'popular-movies': 'https://movie.douban.com/j/search_subjects?type=movie&tag=热门&sort=recommend&page_limit=72&page_start=1',
+            'top-rated-movies': 'https://movie.douban.com/j/search_subjects?type=movie&tag=豆瓣高分&sort=recommend&page_limit=72&page_start=1',
+            'animation-movies': 'https://movie.douban.com/j/search_subjects?type=movie&tag=动画&sort=recommend&page_limit=72&page_start=1',
+            'underrated-movies': 'https://movie.douban.com/j/search_subjects?type=movie&tag=冷门佳片&sort=recommend&page_limit=72&page_start=1',
+            'popular-tv': 'https://movie.douban.com/j/search_subjects?type=tv&tag=热门&sort=recommend&page_limit=72&page_start=1',
+            'chinese-tv': 'https://movie.douban.com/j/search_subjects?type=tv&tag=国产剧&sort=recommend&page_limit=72&page_start=1',
+            'japanese-tv': 'https://movie.douban.com/j/search_subjects?type=tv&tag=日剧&sort=recommend&page_limit=72&page_start=1',
+            'korean-tv': 'https://movie.douban.com/j/search_subjects?type=tv&tag=韩剧&sort=recommend&page_limit=72&page_start=1',
+            'american-tv': 'https://movie.douban.com/j/search_subjects?type=tv&tag=美剧&sort=recommend&page_limit=72&page_start=1',
+            'british-tv': 'https://movie.douban.com/j/search_subjects?type=tv&tag=英剧&sort=recommend&page_limit=72&page_start=1',
+            'anime': 'https://movie.douban.com/j/search_subjects?type=tv&tag=日本动画&sort=recommend&page_limit=72&page_start=1',
+            'variety-shows': 'https://movie.douban.com/j/search_subjects?type=tv&tag=综艺&sort=recommend&page_limit=72&page_start=1',
+            'documentaries': 'https://movie.douban.com/j/search_subjects?type=tv&tag=纪录片&sort=recommend&page_limit=72&page_start=1'
         };
-        
-        request.onsuccess = (event) => resolve(event.target.result);
-        request.onerror = (event) => reject(event.target.error);
-    });
-};
 
-const getCachedData = async (url) => {
-    try {
-        const db = await openDB();
-        const tx = db.transaction('apiCache', 'readonly');
-        const store = tx.objectStore('apiCache');
-        const request = store.get(url);
-        
-        return new Promise((resolve) => {
-            request.onsuccess = (e) => {
-                const result = e.target.result;
-                // 检查缓存有效期（1小时）
-                if (result && Date.now() - result.timestamp < 3600000) {
-                    resolve(result.data);
-                } else {
-                    resolve(null);
+        // 获取数据并渲染
+        async function fetchAndRenderMovies(categoryId) {
+            const endpoint = apiEndpoints[categoryId];
+            if (!endpoint) return;
+            
+            // 检查缓存是否存在且未过期
+            const cacheKey = `douban_cache_${categoryId}`;
+            const cachedData = localStorage.getItem(cacheKey);
+            const now = new Date().getTime();
+            
+            if (cachedData) {
+                const { data, timestamp } = JSON.parse(cachedData);
+                // 缓存有效期为2小时
+                if (now - timestamp < 7200000) {
+                    renderMovies(categoryId, data);
+                    return;
                 }
-            };
-            request.onerror = () => resolve(null);
-        });
-    } catch {
-        return null;
-    }
-};
-
-const cacheData = async (url, data) => {
-    try {
-        const db = await openDB();
-        const tx = db.transaction('apiCache', 'readwrite');
-        const store = tx.objectStore('apiCache');
-        store.put({ url, data, timestamp: Date.now() });
-    } catch (error) {
-        console.error('缓存失败:', error);
-    }
-};
-
-// 带重试的fetch
-const fetchWithRetry = async (url, retries = 3, timeout = 5000) => {
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
-        
-        const response = await fetch(url, {
-            signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return response;
-    } catch (error) {
-        if (retries > 0) {
-            console.log(`请求失败，剩余重试次数：${retries}`);
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            return fetchWithRetry(url, retries - 1, timeout);
+            }
+            
+            try {
+                const encodedUrl = encodeURIComponent(endpoint);
+                const proxyUrl = `https://seep.eu.org/${encodedUrl}`;
+                const response = await fetch(proxyUrl);
+                const data = await response.json();
+                
+                // 更新缓存
+                localStorage.setItem(cacheKey, JSON.stringify({
+                    data: data.subjects,
+                    timestamp: now
+                }));
+                
+                renderMovies(categoryId, data.subjects);
+            } catch (error) {
+                console.error(`获取${categoryId}数据失败:`, error);
+                document.getElementById(categoryId).innerHTML = 
+                    '<div class="error-message">加载失败，请刷新重试</div>';
+            }
         }
-        throw error;
-    }
-};
-
-function initPlayer(m3u8Url) {
-            const encodedUrl = encodeURIComponent(m3u8Url);
-            document.getElementById('player').src = 
-                `https://jx.yayazy.cc/m3u8/?url=${encodedUrl}`;
-        }
-
-        // 创建剧集按钮
-        function createEpisodeButtons(episodes) {
-            const container = document.getElementById('episodeList');
-            episodes.forEach((ep, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'episode-btn' + (index === 0 ? ' active' : '');
-                btn.textContent = ep.title;
-                btn.onclick = () => {
-                    document.querySelectorAll('.episode-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    initPlayer(ep.url);
-                };
-                container.appendChild(btn);
+        
+        // 初始化导航栏点击事件
+        function initCategoryNav() {
+            const links = document.querySelectorAll('.category-link');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const categoryId = this.dataset.category;
+                    
+                    // 更新活动状态
+                    links.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 滚动到对应分类
+                    document.getElementById(categoryId).scrollIntoView({ behavior: 'smooth' });
+                    
+                    // 显示当前分类并隐藏其他分类
+                    const containers = document.querySelectorAll('.movie-grid');
+                    containers.forEach(container => {
+                        container.style.display = container.id === categoryId ? 'grid' : 'none';
+                    });
+                    
+                    // 如果内容未加载则加载数据
+                    const container = document.getElementById(categoryId);
+                    if (container && container.innerHTML === '') {
+                        container.innerHTML = '<div class="loading"><div class="loading-animation"></div></div>';
+                        fetchAndRenderMovies(categoryId);
+                    }
+                });
             });
         }
 
-        // 加载数据
-        // 创建源切换按钮
-async function createSourceButtons() {
-  const container = document.getElementById('sourceList');
-  container.innerHTML = '';
-  
-  for (const source of API_SOURCES) {
-    try {
-      const response = await fetch(source.url);
-      if (!response.ok) {
-        console.warn(`[${source.name}]接口不可用`);
-        continue;
-      }
-      
-      const data = await response.json();
-      if (!data.list?.[0]?.vod_name) {
-        console.warn(`源${source.name}数据无效`);
-        continue;
-      }
-      
-      const btn = document.createElement('button');
-      btn.className = source === currentApiSource ? 'source-btn active' : 'source-btn';
-      btn.textContent = `${data.list[0].vod_name.trim()}`;
-      btn.dataset.sourceUrl = source.url;
-      btn.dataset.sourceName = source.name;
-      btn.dataset.sourceStatus = 'valid';
-      
-      btn.onclick = () => {
-        document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        currentApiSource = source;
-        document.getElementById('episodeList').innerHTML = '';
-        loadData();
-      };
-      container.appendChild(btn);
-    } catch (error) {
-      console.error(`[${source.name}]接口请求失败:`, error);
-      // 自动跳过无效源，不创建对应按钮
-    }
-  }
-}
-
-
-async function loadData() {
-            try {
-                // 显示加载状态
-                const container = document.getElementById('episodeList');
-                container.innerHTML = '<div class="loading">加载中...</div>';
+        // 渲染电影卡片
+        function renderMovies(containerId, movies) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            movies.forEach(movie => {
+                const movieCard = document.createElement('div');
+                movieCard.className = 'movie-card';
                 
-                // 尝试从缓存读取
-                const cachedData = await getCachedData(currentApiSource.url);
-                if (cachedData) {
-                    console.log('使用缓存数据');
-                    const data = cachedData;
-                    console.log('使用缓存数据:', JSON.stringify(data));
-                    if (!data.list?.[0]?.vod_play_url) {
-                        throw new Error('无效的剧集数据格式');
-                    }
-                    
-                    const episodes = data.list[0].vod_play_url.split('#')
-                        .filter(item => item.includes('$'))
-                        .map(item => {
-                            const parts = item.split('$');
-                            if (parts.length < 2 || !parts[0].trim() || !parts[1]?.trim()) {
-                                console.warn('无效剧集条目:', item);
-                                return null;
-                            }
-                            return { 
-                                title: parts[0].trim(), 
-                                url: parts[1].trim().replace(/^(http:|https:)?\/\//, 'https://') 
-                            };
-                        })
-                        .filter(Boolean)
-                        .filter(ep => {
-                            const isValid = ep.url.toLowerCase().endsWith('.m3u8');
-                            if (!isValid) console.warn('非m3u8格式:', ep.url);
-                            return isValid;
-                        });
-                    
-                    if(episodes.length === 0) {
-                        throw new Error('未找到有效的m3u8格式视频源');
-                    }
-                    
-                    document.getElementById('episodeList').innerHTML = '';
-                    if(episodes.length > 0) {
-                        initPlayer(episodes[0].url);
-                        createEpisodeButtons(episodes);
-                    }
-                    return;
+                let episodesInfo = '';
+                if (movie.episodes_info) {
+                    episodesInfo = `<div class="movie-episodes">${movie.episodes_info}</div>`;
                 }
                 
-                // 发起网络请求
-                                // 智能选择数据源
-                const { source, data } = await selectBestSource();
-                currentApiSource = source;
+                movieCard.innerHTML = `
+                    <a href="play.html?wd=${encodeURIComponent(movie.title)}">
+                        <img class="movie-cover" src="${movie.cover}" alt="${movie.title}">
+                        <div class="movie-info">
+                            <div class="movie-title">${movie.title}</div>
+                            <div class="movie-rate">${movie.rate || ''}</div>
+                            ${episodesInfo}
+                        </div>
+                    </a>
+                `;
                 
-                // 缓存有效数据
-                await cacheData(currentApiSource.url, data);
-                console.log('API响应数据:', JSON.stringify(data));
-                if (!data.list || !data.list[0].vod_play_url) {
-                    throw new Error('接口数据结构异常');
-                }
-                
-                // 解析剧集数据（假设数据结构中存在vod_play_url字段）
-                const episodePattern = /([^#]+)\$([^#]+)/g;
-                const episodes = Array.from(data.list[0].vod_play_url.matchAll(episodePattern))
-                    .map(match => ({
-                        title: match[1].trim(),
-                        url: match[2].trim().replace(/^(http:|https:)?\/\//, 'https://')
-                    }))
-                    .filter(ep => 
-                        ep.url && 
-                        ep.url.match(/^https?:\/\/[^\s]+.m3u8($|\?)/i) &&
-                        ep.title &&
-                        ep.title.length > 0
-                    );
-                
-                if(episodes.length === 0) {
-                    throw new Error('未找到有效的m3u8格式视频源');
-                }
-                // 默认加载第一个剧集
-                if(episodes.length > 0) {
-                    initPlayer(episodes[0].url);
-                    createEpisodeButtons(episodes);
-                }
-            } catch (error) {
-                console.error('加载播放地址失败:', error);
-                document.getElementById('episodeList').innerHTML = '<div class="error-message">当前源加载失败，正在尝试其他源...</div>';
-                document.querySelectorAll(`.source-btn[data-source-name="${currentApiSource.name}"]`).forEach(btn => {
-                    btn.style.display = 'none';
-                });
-            }
+                container.appendChild(movieCard);
+            });
         }
 
+        // 页面加载完成后初始化导航栏并加载默认数据
+        document.addEventListener('DOMContentLoaded', () => {
+            initCategoryNav();
+            // 默认加载热门剧集数据
+            fetchAndRenderMovies('popular-tv');
+            
+            // 设置所有分类容器的初始状态
+            const containers = document.querySelectorAll('.movie-grid');
+            containers.forEach(container => {
+                if (container.id !== 'popular-tv') {
+                    container.style.display = 'none';
+                } else {
+                    container.innerHTML = '<div class="loading"><div class="loading-animation"></div></div>';
+                }
+            });
+        });
+        
+        // 处理页面从缓存恢复的情况
+        window.addEventListener('pageshow', function(event) {
+            const activeCategory = document.querySelector('.category-link.active');
+            if (activeCategory) {
+                const categoryId = activeCategory.dataset.category;
+                const container = document.getElementById(categoryId);
+                if (container) {
+                    container.innerHTML = '<div class="loading"><div class="loading-animation"></div></div>';
+                    container.style.display = 'grid';
+                    fetchAndRenderMovies(categoryId);
+                }
+            }
+        });
         // 处理搜索功能
         function handleSearch() {
             const searchValue = document.getElementById('searchInput').value.trim();
             if (searchValue) {
-                const newUrl = new URL(window.location.href);
-                newUrl.searchParams.set('wd', searchValue);
-                history.replaceState({}, '', newUrl);
-                location.reload();
+                window.location.href = `play.html?wd=${encodeURIComponent(searchValue)}`;
             }
         }
 
@@ -363,40 +381,7 @@ async function loadData() {
         document.getElementById('searchInput').addEventListener('keyup', function(e) {
             if (e.key === 'Enter') handleSearch();
         });
-
-        // 页面加载完成后执行
-        // 初始化预加载
-async function preloadAPIData() {
-    try {
-        const requests = API_SOURCES.map(async (source) => {
-            try {
-                const response = await fetchWithRetry(source.url);
-                const data = await response.json();
-                if (data.list && data.list[0].vod_name) {
-                    await cacheData(source.url, data);
-                    return { source, data };
-                }
-            } catch (error) {
-                console.error(`预加载源${source.name}失败:`, error);
-            }
-            return null;
-        });
-        return (await Promise.all(requests)).filter(Boolean);
-    } catch (error) {
-        console.error('预加载失败:', error);
-        return [];
-    }
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const wdParam = new URLSearchParams(window.location.search).get('wd');
-    if (!wdParam) return;
-    
-    await preloadAPIData();
-    createSourceButtons();
-    loadData();
-    document.getElementById('searchInput').value = wdParam;
-});
+        
     </script>
 </body>
 </html>
