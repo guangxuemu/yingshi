@@ -342,7 +342,7 @@ async function loadData() {
                 }
             } catch (error) {
                 console.error('加载播放地址失败:', error);
-                document.getElementById('episodeList').innerHTML = '<div class="error-message">当前源加载失败，正在尝试其他源...</div>';
+                document.getElementById('episodeList').innerHTML = '<div class="error-message"></div>';
                 document.querySelectorAll(`.source-btn[data-source-name="${currentApiSource.name}"]`).forEach(btn => {
                     btn.style.display = 'none';
                 });
