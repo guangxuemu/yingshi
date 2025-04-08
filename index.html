@@ -327,7 +327,7 @@
                 const proxyCoverUrl = `https://seep.eu.org/${encodeURIComponent(movie.cover)}`;
                 movieCard.innerHTML = `
                     <a href="play.html?wd=${encodeURIComponent(movie.title)}">
-                        <img class="movie-cover" src="${proxyCoverUrl}" alt="${movie.title}">
+                        <img class="movie-cover" src="${proxyCoverUrl}" alt="${movie.title}" onerror="this.src='${movie.cover}'">
                         <div class="movie-info">
                             <div class="movie-title">${movie.title}</div>
                             <div class="movie-rate">${movie.rate || ''}</div>
