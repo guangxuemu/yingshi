@@ -230,17 +230,17 @@
 //备用解析是常规格式的解析
 "beiyongjiexi":[
 {"name":"789解析","url":"https://jiexi.789jiexi.com/?url=","ua":"User-Agent$Dart/2.10#referer$123"},
-{"name":"宝片","url":"https://jx.xymp4.cc/?url=","ua":"User-Agent$Dart/2.10#referer$123"},
+{"name":"m3u8","url":"https://jx.m3u8.tv/jiexi/?url=","ua":"User-Agent$okhttp/3.12.0#referer$123"},
+{"name":"yparse","url":"https://jx.yparse.com/index.php?url=","ua":"User-Agent$Dart/2.10#referer$123"},	
+{"name":"冰豆","url":"https://www.ckplayer.vip/jiexi/?url=","ua":"User-Agent$okhttp/3.12.0#referer$123"},
 {"name":"cgdyw","url":"https://www.cgdyw.net/jiexi/jiekou-2/?url="},
-{"name":"花火","url":"https://jx.hls.one/?url=","ua":"User-Agent$Dart/2.10#referer$123","ua":"User-Agent$Dart/2.10#referer$123","ua":"User-Agent$Dart/2.10#referer$123","ua":"User-Agent$Dart/2.10#referer$123"},
-{"name":"宝解1","url":"https://jx.zui.cm/?url=","ua":"User-Agent$Dart/2.10#referer$123","ua":"User-Agent$Dart/2.10#referer$123","ua":"User-Agent$Dart/2.10#referer$123"},
-{"name":"宝解2","url":"https://jx.m3u8.tv/jiexi/?url=","ua":"User-Agent$Dart/2.10#referer$123","ua":"User-Agent$Dart/2.10#referer$123"},	
+
+{"name":"花火","url":"https://jx.hls.one/?url=","ua":"User-Agent$Dart/2.10#referer$123"},
+{"name":"zui","url":"https://jx.zui.cm/?url=","ua":"User-Agent$Dart/2.10#referer$123"},
 {"name":"瓜子解析","url":"https://yparse.ik9.cc/index.php?url=","ua":"User-Agent$Dart/2.10#referer$123"},	
 {"name":"NMTV","url":"https://nm.xxxc137.top/static/player/artplayer.html?url=","ua":"User-Agent$Dart/2.10#referer$123"},	
-{"name":"yparse","url":"https://jx.yparse.com/index.php?url=","ua":"User-Agent$Dart/2.10#referer$123"},	
 {"name":"小蜜蜂","url":"https://jx.xmflv.cc/?url=","ua":"User-Agent$okhttp/3.12.0#referer$123"},	
-{"name":"冰豆","url":"https://www.ckplayer.vip/jiexi/?url=","ua":"User-Agent$okhttp/3.12.0#referer$123"},	
-{"name":"m3u8","url":"https://jx.m3u8.tv/jiexi/?url=","ua":"User-Agent$okhttp/3.12.0#referer$123"},
+{"name":"宝片","url":"https://jx.xymp4.cc/?url=","ua":"User-Agent$Dart/2.10#referer$123"},
 {"name":"jiexila","url":"https://jx.jiexila.cn/?url=","ua":"User-Agent$okhttp/3.12.0#referer$123"}],
 
 
