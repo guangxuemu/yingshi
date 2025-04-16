@@ -20,6 +20,19 @@ const API_SITES = {
         api: 'https://cj.rycjapi.com',
         name: '如意资源',
     },
+    cjhw: {
+        api: 'https://cjhwba.com',
+        name: '新华为',
+    },
+    ikunzy: {
+        api: 'https://ikunzyapi.com',
+        name: 'iKun资源',
+    },
+    qiqikp: {
+        api: 'https://www.77kkpp.com',
+        name: '七七看片',
+    },
+
     heimuer: {
         api: 'https://json.heimuer.xyz',
         name: '黑木耳',
@@ -38,6 +51,18 @@ const API_SITES = {
         name: '非凡影视',
         detail: 'http://ffzy5.tv'
     },
+    dbzy: {
+        api: 'https://caiji.dbzy5.com',
+        name: '豆瓣资源',
+    },
+    lzzy: {
+        api: 'https://cj.lziapi.com',
+        name: '量子资源',
+    },
+    bfzy: {
+        api: 'https://bfzyapi.com',
+        name: '暴风资源',
+    },
     tyyszy: {
         api: 'https://tyyszyapi.com',
         name: '天涯资源',
@@ -51,10 +76,7 @@ const API_SITES = {
         api: 'https://collect.wolongzy.cc',
         name: '卧龙资源',
     },
-    cjhw: {
-        api: 'https://cjhwba.com',
-        name: '新华为',
-    },
+
     wujin: {
         api: 'https://api.wujinapi.me',
         name: '无尽资源',
@@ -62,27 +84,7 @@ const API_SITES = {
     jisu: {
         api: 'https://jszyapi.com',
         name: '极速资源',
-        detail: 'https://jszyapi.com'
-    },
-    dbzy: {
-        api: 'https://caiji.dbzy5.com',
-        name: '豆瓣资源',
-    },
-    lzzy: {
-        api: 'https://cj.lziapi.com',
-        name: '量子资源',
-    },
-    bfzy: {
-        api: 'https://bfzyapi.com',
-        name: '暴风资源',
-    },
-	ikunzy: {
-        api: 'https://ikunzyapi.com',
-        name: 'iKun资源',
-    },
-    qiqikp: {
-        api: 'https://www.77kkpp.com',
-        name: '七七看片',
+        //detail: 'https://jszyapi.com'
     },
     yayazy: {
         api: 'https://cj.yayazy.net',
@@ -96,10 +98,6 @@ const API_SITES = {
         api: 'https://api.zuidapi.com',
         name: '最大资源',
     },
-	ikunzy: {
-        api: 'https://ikunzyapi.com',
-        name: 'iKun资源',
-    },	
 
 
 
