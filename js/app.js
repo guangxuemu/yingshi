@@ -1,5 +1,5 @@
 // 全局变量
-let selectedAPIs = JSON.parse(localStorage.getItem('selectedAPIs') || '["ruyi","heimuer","mozhua","mdzy","ffzy","tyyszy","ckzy","zy360","wolong","cjhw","wujin","jisu","dbzy","lzzy","bfzy","ikunzy","qiqikp","yayazy","suoni","guangsu","zuida","hhzy","ikunzy"]'); // 默认选中黑木耳
+let selectedAPIs = JSON.parse(localStorage.getItem('selectedAPIs') || '["ruyi","heimuer","mozhua","mdzy","ffzy","tyyszy","zy360","wolong","cjhw","wujin","jisu","dbzy","lzzy","bfzy","ikunzy","qiqikp","yayazy","suoni","guangsu","zuida","hhzy","ikunzy"]'); // 默认选中黑木耳
 let customAPIs = JSON.parse(localStorage.getItem('customAPIs') || '[]'); // 存储自定义API列表
 
 // 添加当前播放的集数索引
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 设置默认API选择（如果是第一次加载）
     if (!localStorage.getItem('hasInitializedDefaults')) {
         // 仅选择黑木耳源
-        selectedAPIs = ["ruyi","heimuer","mozhua","mdzy","ffzy","tyyszy","ckzy","zy360","wolong","cjhw","wujin","jisu","dbzy","lzzy","bfzy","ikunzy","qiqikp","yayazy","suoni","guangsu","zuida","hhzy","ikunzy"];
+        selectedAPIs = ["ruyi","heimuer","mozhua","mdzy","ffzy","tyyszy","zy360","wolong","cjhw","wujin","jisu","dbzy","lzzy","bfzy","ikunzy","qiqikp","yayazy","suoni","guangsu","zuida","hhzy","ikunzy"];
         localStorage.setItem('selectedAPIs', JSON.stringify(selectedAPIs));
         
         // 默认选中过滤开关
@@ -72,7 +72,7 @@ function initAPICheckboxes() {
     // 创建普通API源的复选框
     Object.keys(API_SITES).forEach(apiKey => {
         const api = API_SITES[apiKey];
-        if (api.adult) return; // 跳过成人内容API，稍后添加
+        //if (api.adult) return; // 跳过成人内容API，稍后添加
         
         const checked = selectedAPIs.includes(apiKey);
         
