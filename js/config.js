@@ -1,4 +1,4 @@
-// 全局常量配置
+// 全局常量配置https://seep.eu.org/  https://api.allorigins.win/raw?url=
 
 const PROXY_URL = 'https://cors.zme.ink/';
 const HOPLAYER_URL = 'https://hoplayer.com/index.html';
