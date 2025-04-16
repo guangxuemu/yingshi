@@ -1,4 +1,4 @@
-// 全局常量配置
+// 全局常量配置https://api.allorigins.win/raw?url=  https://seep.eu.org/
 
 const PROXY_URL = 'https://cors.zme.ink/';
 const HOPLAYER_URL = 'https://hoplayer.com/index.html';
@@ -92,17 +92,9 @@ const API_SITES = {
         api: 'https://suoniapi.com',
         name: '索尼资源',
     },
-    guangsu: {
-        api: 'https://api.guangsuapi.com',
-        name: '光速资源',
-    },
     zuida: {
         api: 'https://api.zuidapi.com',
         name: '最大资源',
-    },
-    hhzy: {
-        api: 'https://hhzyapi.com',
-        name: '豪华资源',
     },
 	ikunzy: {
         api: 'https://ikunzyapi.com',
