@@ -1,6 +1,6 @@
 // 全局变量
 let selectedAPIs = JSON.parse(localStorage.getItem('selectedAPIs') || '["ruyi","heimuer","mozhua","mdzy","ffzy","tyyszy","ckzy","zy360","wolong","cjhw","wujin","jisu","dbzy","lzzy","bfzy","ikunzy","qiqikp","yayazy","suoni","guangsu","zuida","hhzy","ikunzy"]'); // 默认选中黑木耳
-let customAPIs = JSON.parse(localStorage.getItem('customAPIs') || '["yutuzy","jkun","bwzy","souav","siwa","r155","lsb","huangcang"]'); // 存储自定义API列表
+let customAPIs = JSON.parse(localStorage.getItem('customAPIs') || '[]'); // 存储自定义API列表
 
 // 添加当前播放的集数索引
 let currentEpisodeIndex = 0;
