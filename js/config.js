@@ -8,7 +8,7 @@ const MAX_HISTORY_ITEMS = 5;
 // 网站信息配置
 const SITE_CONFIG = {
     name: 'LibreTV',
-    url: 'https://libretv.is-an.org',
+    url: 'https://precious-kringle-868739.netlify.app',
     description: '免费在线视频搜索与观看平台',
     logo: 'https://images.icon-icons.com/38/PNG/512/retrotv_5520.png',
     version: '1.0.0'
@@ -16,10 +16,22 @@ const SITE_CONFIG = {
 
 // API站点配置
 const API_SITES = {
+    ruyi: {
+        api: 'https://cj.rycjapi.com',
+        name: '如意资源',
+    },
     heimuer: {
         api: 'https://json.heimuer.xyz',
         name: '黑木耳',
         detail: 'https://heimuer.tv'
+    },
+	mozhua: {
+        api: 'https://mozhuazy.com',
+        name: '魔爪资源',
+    },
+    mdzy: {
+        api: 'https://www.mdzyapi.com',
+        name: '魔都资源',
     },
     ffzy: {
         api: 'http://ffzy5.tv',
@@ -27,7 +39,7 @@ const API_SITES = {
         detail: 'http://ffzy5.tv'
     },
     tyyszy: {
-        api: 'https://tyyszy.com',
+        api: 'https://tyyszyapi.com',
         name: '天涯资源',
     },
     ckzy: {
@@ -40,16 +52,16 @@ const API_SITES = {
         name: '360资源',
     },
     wolong: {
-        api: 'https://wolongzyw.com',
+        api: 'https://collect.wolongzy.cc',
         name: '卧龙资源',
     },
     cjhw: {
         api: 'https://cjhwba.com',
         name: '新华为',
     },
-    hwba: {
-        api: 'https://cjwba.com',
-        name: '华为吧资源',
+    wujin: {
+        api: 'https://api.wujinapi.me',
+        name: '无尽资源',
     },
     jisu: {
         api: 'https://jszyapi.com',
@@ -57,26 +69,57 @@ const API_SITES = {
         detail: 'https://jszyapi.com'
     },
     dbzy: {
-        api: 'https://dbzy.com',
+        api: 'https://caiji.dbzy5.com',
         name: '豆瓣资源',
+    },
+    lzzy: {
+        api: 'https://cj.lziapi.com',
+        name: '量子资源',
     },
     bfzy: {
         api: 'https://bfzyapi.com',
         name: '暴风资源',
     },
-    mozhua: {
-        api: 'https://mozhuazy.com',
-        name: '魔爪资源',
+	ikunzy: {
+        api: 'https://ikunzyapi.com',
+        name: 'iKun资源',
     },
-    mdzy: {
-        api: 'https://www.mdzyapi.com',
-        name: '魔都资源',
+    77kp: {
+        api: 'https://www.77kkpp.com',
+        name: '七七看片',
     },
-    ruyi: {
-        api: 'https://cj.rycjapi.com',
-        name: '如意资源',
+    yayazy: {
+        api: 'https://cj.yayazy.net',
+        name: '鸭鸭资源',
     },
-    
+    suoni: {
+        api: 'https://suoniapi.com',
+        name: '索尼资源',
+    },
+    guangsu: {
+        api: 'https://api.guangsuapi.com',
+        name: '光速资源',
+    },
+    zuida: {
+        api: 'https://api.zuidapi.com',
+        name: '最大资源',
+    },
+    hhzy: {
+        api: 'https://hhzyapi.com',
+        name: '豪华资源',
+    },
+	ikunzy: {
+        api: 'https://ikunzyapi.com',
+        name: 'iKun资源',
+    },	
+
+
+
+    yutuzy: {
+        api: 'https://yutuzy10.com',
+        name: '玉兔资源',
+        adult: true
+    },	
     jkun: {
         api: 'https://jkunzyapi.com',
         name: 'jkun资源',
