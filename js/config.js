@@ -1,9 +1,15 @@
 // 全局常量配置https://api.allorigins.win/raw?url=  https://cors.zme.ink/
 
 const PROXY_URL = 'https://seep.eu.org/';
-const HOPLAYER_URL = 'https://hoplayer.com/index.html';
+// const HOPLAYER_URL = 'https://hoplayer.com/index.html';
 const SEARCH_HISTORY_KEY = 'videoSearchHistory';
 const MAX_HISTORY_ITEMS = 5;
+
+// 密码保护配置
+const PASSWORD_CONFIG = {
+    localStorageKey: 'passwordVerified',  // 存储验证状态的键名
+    verificationTTL: 90 * 24 * 60 * 60 * 1000,  // 验证有效期（90天，约3个月）
+};
 
 // 网站信息配置
 const SITE_CONFIG = {
@@ -11,7 +17,7 @@ const SITE_CONFIG = {
     url: 'https://precious-kringle-868739.netlify.app',
     description: '免费在线视频搜索与观看平台',
     logo: 'https://images.icon-icons.com/38/PNG/512/retrotv_5520.png',
-    version: '1.0.0'
+    version: '1.0.3'
 };
 
 // API站点配置
@@ -210,10 +216,6 @@ const SECURITY_CONFIG = {
     enableXSSProtection: true,  // 是否启用XSS保护
     sanitizeUrls: true,         // 是否清理URL
     maxQueryLength: 100,        // 最大搜索长度
-    allowedApiDomains: [        // 允许的API域名
-        'heimuer.xyz',
-        'ffzy5.tv'
-    ]
 };
 
 // 添加多个自定义API源的配置
