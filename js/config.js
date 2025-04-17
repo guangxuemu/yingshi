@@ -1,6 +1,6 @@
-// 全局常量配置https://api.allorigins.win/raw?url=  https://cors.zme.ink/
+// 全局常量配置https://api.allorigins.win/raw?url=  https://seep.eu.org/
 
-const PROXY_URL = 'https://seep.eu.org/';
+const PROXY_URL = 'https://cors.zme.ink/';
 const HOPLAYER_URL = 'https://hoplayer.com/index.html';
 const SEARCH_HISTORY_KEY = 'videoSearchHistory';
 const MAX_HISTORY_ITEMS = 5;
@@ -24,22 +24,6 @@ const API_SITES = {
         api: 'https://cjhwba.com',
         name: '新华为',
     },
-    ikunzy: {
-        api: 'https://ikunzyapi.com',
-        name: 'iKun资源',
-    },
-    qiqikp: {
-        api: 'https://www.77kkpp.com',
-        name: '七七看片',
-    },
-	mozhua: {
-        api: 'https://mozhuazy.com',
-        name: '魔爪资源',
-    },
-    mdzy: {
-        api: 'https://www.mdzyapi.com',
-        name: '魔都资源',
-    },
     ffzy: {
         api: 'http://ffzy5.tv',
         name: '非凡影视',
@@ -57,20 +41,34 @@ const API_SITES = {
         api: 'https://bfzyapi.com',
         name: '暴风资源',
     },
-    tyyszy: {
-        api: 'https://tyyszyapi.com',
-        name: '天涯资源',
+    qiqikp: {
+        api: 'https://www.77kkpp.com',
+        name: '七七看片',
     },
-    
-    zy360: {
-        api: 'https://360zy.com',
-        name: '360资源',
+	mozhua: {
+        api: 'https://mozhuazy.com',
+        name: '魔爪资源',
+    },
+    mdzy: {
+        api: 'https://www.mdzyapi.com',
+        name: '魔都资源',
     },
     wolong: {
         api: 'https://collect.wolongzy.cc',
         name: '卧龙资源',
     },
-
+    tyyszy: {
+        api: 'https://tyyszyapi.com',
+        name: '天涯资源',
+    },
+    ikunzy: {
+        api: 'https://ikunzyapi.com',
+        name: 'iKun资源',
+    },
+    zy360: {
+        api: 'https://360zy.com',
+        name: '360资源',
+    },
     wujin: {
         api: 'https://api.wujinapi.me',
         name: '无尽资源',
