@@ -1,6 +1,6 @@
-// 全局常量配置https://api.allorigins.win/raw?url=  https://cors.zme.ink/
+// 全局常量配置  https://seep.eu.org/   https://cors.zme.ink/
 
-const PROXY_URL = 'https://seep.eu.org/';
+const PROXY_URL = 'https://api.allorigins.win/raw?url=';
 // const HOPLAYER_URL = 'https://hoplayer.com/index.html';
 const SEARCH_HISTORY_KEY = 'videoSearchHistory';
 const MAX_HISTORY_ITEMS = 5;
